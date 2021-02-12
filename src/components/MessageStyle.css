@@ -1,0 +1,9 @@
+.Message {
+  width: 200px;
+  height: 100px;
+}
+
+.Message > p,
+div {
+  display: inline-block;
+}
