@@ -1,4 +1,5 @@
-import { registerHandler, sendMessage } from "../api";
+import { sendMessage } from "../api";
+import { ChatRoomActionType, ChatRoomState } from "../chatRoomTypes";
 
 const Avatars = [
   "https://ow-publisher-assets.s3.amazonaws.com/chat-app/avatars/001-snorlax.png",
@@ -29,7 +30,7 @@ const reducer = (
           hasError: true,
         };
       }
-      let avatarIndex = Math.floor(Math.random() * 6);
+      let avatarIndex = Math.floor(Math.random() * 5);
       let avatar = Avatars[avatarIndex];
 
       sessionStorage.setItem(
@@ -51,16 +52,13 @@ const reducer = (
         isLoggedIn: true,
       };
     }
-    case "START_CHAT": {
-      registerHandler((newMsg: any) => {
-        let historyMsgs = [...state.messagesHistoryList];
-        historyMsgs.push(newMsg);
-        return {
-          ...state,
-          messagesHistoryList: historyMsgs,
-        };
-      });
-      break;
+    case "RECEIVE": {
+      let historyMsgs = [...state.messagesHistoryList];
+      historyMsgs.push(action.payload.newMsg);
+      return {
+        ...state,
+        messagesHistoryList: historyMsgs,
+      };
     }
     case "SEND": {
       if (state.currentMsg === "") {
@@ -76,13 +74,11 @@ const reducer = (
         avatar: state.avatarUrl,
       };
       sendMessage(msg);
-      let historyMsgs = [...state.messagesHistoryList];
-      historyMsgs.push(msg);
+
       return {
         ...state,
         hasError: false,
         currentMsg: "",
-        messagesHistoryList: historyMsgs,
       };
     }
     case "CHANGE_SEND": {
@@ -101,4 +97,4 @@ const reducer = (
   return state;
 };
 
-export default reducer;
+export { reducer, initialState };

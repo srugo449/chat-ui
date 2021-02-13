@@ -1,12 +1,7 @@
-import {
-  Button,
-  Container,
-  InputAdornment,
-  TextField,
-} from "@material-ui/core";
+import { Button, Card, InputAdornment, TextField } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
 import React from "react";
-import "./MessageStyle.css";
+import "./UserLoginStyle.css";
 
 const userLogin = (props: {
   changed: (event: any) => any;
@@ -14,7 +9,8 @@ const userLogin = (props: {
   error: boolean;
 }) => {
   return (
-    <Container className="UserLogin">
+    <Card className="UserLogin">
+      <h3>Login To Chatroom</h3>
       <TextField
         className="login-input"
         id="user-login"
@@ -37,7 +33,7 @@ const userLogin = (props: {
       >
         Send
       </Button>
-    </Container>
+    </Card>
   );
 };
 

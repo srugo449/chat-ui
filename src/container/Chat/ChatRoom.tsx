@@ -1,17 +1,16 @@
-import React, { Component, useEffect } from "react";
-import { Container } from "@material-ui/core";
-import "./ChatRoom.css";
+import React, { Component } from "react";
 import InputArea from "../../components/InputArea";
 import { connect } from "react-redux";
 import MessagesHistory from "../../components/MessagesHistory";
 import UserLogin from "../../components/UserLogin";
 import { registerHandler } from "../../api";
+import { ChatRoomActions, ChatRoomState } from "../../chatRoomTypes";
 
 class ChatRoom extends Component<ChatRoomState & ChatRoomActions> {
-  constructor(props: any) {
-    super(props);
-    this.props.start();
+  componentDidMount() {
+    registerHandler(this.props.receive);
   }
+
   render() {
     if (!this.props.isLoggedIn) {
       let oldUser = sessionStorage.getItem("user");
@@ -29,10 +28,10 @@ class ChatRoom extends Component<ChatRoomState & ChatRoomActions> {
         />
       );
     } else {
-      console.log(this.props.messagesHistoryList);
       return (
-        <Container className="ChatRoom">
+        <div className="ChatRoom">
           <MessagesHistory
+            myUserName={this.props.userName}
             messagesHistoryList={this.props.messagesHistoryList}
           />
           <InputArea
@@ -41,8 +40,9 @@ class ChatRoom extends Component<ChatRoomState & ChatRoomActions> {
             click={this.props.sendMsg}
             changed={(e) => this.props.msgTextChange(e)}
             error={this.props.hasError}
+            value={this.props.currentMsg}
           ></InputArea>
-        </Container>
+        </div>
       );
     }
   }
@@ -61,7 +61,8 @@ const mapStateToProps = (state: ChatRoomState) => {
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
-    start: () => dispatch({ type: "START_CHAT" }),
+    receive: (newMsg: any) =>
+      dispatch({ type: "RECEIVE", payload: { newMsg } }),
     register: () => dispatch({ type: "REGISTER" }),
     login: (userName: string, avatar: string) =>
       dispatch({ type: "LOGIN", payload: { userName, avatar } }),

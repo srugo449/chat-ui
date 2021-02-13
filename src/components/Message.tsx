@@ -7,17 +7,17 @@ const message = (props: {
   avatarUrl: string;
   timestamp: string;
   msgContent: string;
-  color: string;
+  owner: string;
 }) => {
   return (
-    <div className="Message">
-      <Avatar alt={props.userName} src={props.avatarUrl} />
+    <div className={"Message " + props.owner}>
+      <div className="name-box">
+        <Avatar className="avatar" alt={props.userName} src={props.avatarUrl} />
+        <h5>{props.userName} says:</h5>
+      </div>
       <div className="msg-box">
-        <span>
-          <h6>{props.userName}</h6>
-          <p>{props.timestamp}</p>
-        </span>
-        <p>{props.msgContent}</p>
+        <p className="msg-text">{props.msgContent}</p>
+        <p className="date-text">{props.timestamp}</p>
       </div>
     </div>
   );

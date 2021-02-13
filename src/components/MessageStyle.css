@@ -1,9 +1,55 @@
 .Message {
-  width: 200px;
-  height: 100px;
+  width: 400px;
+  min-height: 100px;
+  border-radius: 10px;
+  border: 1px solid black;
+  font-size: 16px;
+  color: black;
+  text-align: start;
+  margin: 10px 0;
 }
 
-.Message > p,
-div {
+.Message.owner {
+  background-color: aquamarine;
+  margin-left: auto;
+}
+
+.Message.other {
+  background-color: white;
+  margin-right: auto;
+}
+
+.Message .avatar {
   display: inline-block;
+  margin: 10px 10px 0 10px;
+}
+
+.Message .name-box {
+  display: flex;
+  align-items: center;
+}
+
+.Message h5 {
+  margin: 0;
+  display: inline-block;
+}
+
+.Message .msg-text {
+  margin: 0 0 0 15px;
+  padding: 5px 0;
+  width: 300px;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.Message .date-text {
+  font-size: 12px;
+  color: gray;
+  margin: 0 0 0 15px;
+}
+
+.MessagesList {
+  padding: 20px 24px 100px 24px;
+  overflow: auto;
+  height: 70vh;
 }

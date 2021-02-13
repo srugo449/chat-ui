@@ -4,19 +4,19 @@ type ChatRoomActions = {
   usernameTextChange: (event) => void;
   register: () => void;
   login: (userName: string, avatar: string) => void;
-  start: () => void;
+  receive: (newMsg: any) => void;
 };
 
 type ChatRoomState = {
   userName: string;
   avatarUrl: string;
-  messagesHistoryList: Message[];
+  messagesHistoryList: MessageType[];
   currentMsg: string;
   hasError: boolean;
   isLoggedIn: boolean;
 };
 
-type Message = {
+export type MessageType = {
   text: string;
   timestamp: Date;
   avatar: string;
@@ -25,5 +25,5 @@ type Message = {
 
 type ChatRoomActionType = {
   type: string;
-  payload: any;
+  payload?: any;
 };

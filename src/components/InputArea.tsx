@@ -8,6 +8,7 @@ const inputArea = (props: {
   click: () => void;
   changed: (event: any) => void;
   error: boolean;
+  value: string;
 }) => {
   return (
     <div className="InputArea">
@@ -23,6 +24,7 @@ const inputArea = (props: {
         label="Type a message here..."
         onChange={props.changed}
         error={props.error}
+        value={props.value}
       />
       <Button
         className="send-btn"

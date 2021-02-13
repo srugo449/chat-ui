@@ -1,4 +1,5 @@
 import { io } from "socket.io-client";
+import { MessageType } from "./chatRoomTypes";
 
 //connecting to Socket.IO chat server
 const socket = io("https://ow-chat-server.herokuapp.com");
@@ -13,7 +14,7 @@ function registerHandler(onMessageReceived: (x: any) => any) {
   socket.on("ow/chat", onMessageReceived);
 }
 
-function sendMessage(msgDetails: Message) {
+function sendMessage(msgDetails: MessageType) {
   socket.emit("ow/chat", {
     avatar: msgDetails.avatar,
     username: msgDetails.username,
