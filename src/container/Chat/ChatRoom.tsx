@@ -1,57 +1,81 @@
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import { Container } from "@material-ui/core";
 import "./ChatRoom.css";
 import InputArea from "../../components/InputArea";
-import Message from "../../components/Message";
 import { connect } from "react-redux";
+import MessagesHistory from "../../components/MessagesHistory";
+import UserLogin from "../../components/UserLogin";
+import { registerHandler } from "../../api";
 
 class ChatRoom extends Component<ChatRoomState & ChatRoomActions> {
+  constructor(props: any) {
+    super(props);
+    this.props.start();
+  }
   render() {
-    console.log(this.props);
-    let messages = [];
-    for (let msg of this.props.messagesHistoryList) {
-      messages.push(
-        <Message
-          userName={this.props.userName}
-          avatarUrl={this.props.avatarUrl}
-          timestamp={msg.timestamp.toDateString()}
-          msgContent={msg.msg}
-          color="green"
-          key={msg.timestamp.toDateString()}
-        ></Message>
+    if (!this.props.isLoggedIn) {
+      let oldUser = sessionStorage.getItem("user");
+      if (oldUser !== null) {
+        const { userName, avatar } = JSON.parse(oldUser);
+        this.props.login(userName, avatar);
+      }
+    }
+    if (!this.props.isLoggedIn) {
+      return (
+        <UserLogin
+          loginAction={this.props.register}
+          changed={(e) => this.props.usernameTextChange(e)}
+          error={this.props.hasError}
+        />
+      );
+    } else {
+      console.log(this.props.messagesHistoryList);
+      return (
+        <Container className="ChatRoom">
+          <MessagesHistory
+            messagesHistoryList={this.props.messagesHistoryList}
+          />
+          <InputArea
+            userName={this.props.userName}
+            avatarUrl={this.props.avatarUrl}
+            click={this.props.sendMsg}
+            changed={(e) => this.props.msgTextChange(e)}
+            error={this.props.hasError}
+          ></InputArea>
+        </Container>
       );
     }
-    return (
-      <Container className="ChatRoom">
-        {messages}
-        <InputArea
-          userName={this.props.userName}
-          avatarUrl={this.props.avatarUrl}
-          click={this.props.sendMsg}
-          changed={() => this.props.textChange(e)}
-          error={this.props.hasError}
-        ></InputArea>
-      </Container>
-    );
   }
 }
 
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: ChatRoomState) => {
   return {
-    userName: "Si",
-    avatarUrl:
-      "https://ow-publisher-assets.s3.amazonaws.com/chat-app/avatars/005-bullbasaur.png",
-    messagesHistoryList: [{ msg: "Hello", timestamp: new Date() }],
-    currentMsg: "",
-    hasError: false,
+    isLoggedIn: state.isLoggedIn,
+    userName: state.userName,
+    avatarUrl: state.avatarUrl,
+    messagesHistoryList: state.messagesHistoryList,
+    currentMsg: state.currentMsg,
+    hasError: state.hasError,
   };
 };
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
+    start: () => dispatch({ type: "START_CHAT" }),
+    register: () => dispatch({ type: "REGISTER" }),
+    login: (userName: string, avatar: string) =>
+      dispatch({ type: "LOGIN", payload: { userName, avatar } }),
     sendMsg: () => dispatch({ type: "SEND" }),
-    textChange: (event: any) =>
-      dispatch({ type: "CHANGE", payload: { inputText: event.target.value } }),
+    msgTextChange: (event: any) =>
+      dispatch({
+        type: "CHANGE_SEND",
+        payload: { inputText: event.target.value },
+      }),
+    usernameTextChange: (event: any) =>
+      dispatch({
+        type: "CHANGE_USERNAME",
+        payload: { inputText: event.target.value },
+      }),
   };
 };
 

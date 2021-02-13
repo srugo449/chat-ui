@@ -5,7 +5,7 @@ import "./InputAreaStyle.css";
 const inputArea = (props: {
   userName: string;
   avatarUrl: string;
-  click: any;
+  click: () => void;
   changed: (event: any) => void;
   error: boolean;
 }) => {

@@ -1,6 +1,10 @@
 type ChatRoomActions = {
-  sendMsg: any;
-  textChange: any;
+  sendMsg: () => void;
+  msgTextChange: (event) => void;
+  usernameTextChange: (event) => void;
+  register: () => void;
+  login: (userName: string, avatar: string) => void;
+  start: () => void;
 };
 
 type ChatRoomState = {
@@ -9,11 +13,14 @@ type ChatRoomState = {
   messagesHistoryList: Message[];
   currentMsg: string;
   hasError: boolean;
+  isLoggedIn: boolean;
 };
 
 type Message = {
-  msg: string;
+  text: string;
   timestamp: Date;
+  avatar: string;
+  username: string;
 };
 
 type ChatRoomActionType = {
