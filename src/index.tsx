@@ -5,8 +5,8 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { createStore } from "redux";
 import { Provider } from "react-redux";
-import { connectToSocket, disconnectToSocket } from "./api";
 import { reducer } from "./store/reducer";
+import { connectToSocket, disconnectToSocket } from "./socketApi";
 
 const store = createStore(reducer);
 

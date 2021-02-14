@@ -3,8 +3,8 @@ import InputArea from "../../components/InputArea";
 import { connect } from "react-redux";
 import MessagesHistory from "../../components/MessagesHistory";
 import UserLogin from "../../components/UserLogin";
-import { registerHandler } from "../../api";
 import { ChatRoomActions, ChatRoomState } from "../../chatRoomTypes";
+import { registerHandler } from "../../socketApi";
 
 class ChatRoom extends Component<ChatRoomState & ChatRoomActions> {
   componentDidMount() {
@@ -12,6 +12,7 @@ class ChatRoom extends Component<ChatRoomState & ChatRoomActions> {
   }
 
   render() {
+    ///First check is the user is saved in the local storge, which means the user is already logged in, and refreshed the browser.
     if (!this.props.isLoggedIn) {
       let oldUser = sessionStorage.getItem("user");
       if (oldUser !== null) {
@@ -19,6 +20,7 @@ class ChatRoom extends Component<ChatRoomState & ChatRoomActions> {
         this.props.login(userName, avatar);
       }
     }
+    ///Check is the user is already logged in, if not display the log in screen.
     if (!this.props.isLoggedIn) {
       return (
         <UserLogin
@@ -27,7 +29,9 @@ class ChatRoom extends Component<ChatRoomState & ChatRoomActions> {
           error={this.props.hasError}
         />
       );
-    } else {
+    }
+    /// display the chatroom in screen.
+    else {
       return (
         <div className="ChatRoom">
           <MessagesHistory

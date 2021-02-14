@@ -1,5 +1,5 @@
-import { sendMessage } from "../api";
 import { ChatRoomActionType, ChatRoomState } from "../chatRoomTypes";
+import { sendMessage } from "../socketApi";
 
 const Avatars = [
   "https://ow-publisher-assets.s3.amazonaws.com/chat-app/avatars/001-snorlax.png",
