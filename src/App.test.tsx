@@ -1,11 +1,17 @@
 import React from "react";
-import { cleanup, render, screen, within } from "@testing-library/react";
-import App from "./App";
-import ChatRoom from "./container/Chat/ChatRoom";
-import { registerHandler, sendMessage } from "./api";
+import {
+  cleanup,
+  fireEvent,
+  queryByAttribute,
+  render,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
 import { createStore } from "redux";
 import { initialState, reducer } from "./store/reducer";
+import InputArea from "./components/InputArea";
+import UserLogin from "./components/UserLogin";
+
+const getById = queryByAttribute.bind(null, "id");
 
 const testAvatar =
   "https://ow-publisher-assets.s3.amazonaws.com/chat-app/avatars/001-snorlax.png";
@@ -118,5 +124,94 @@ describe("test the reducer and actions", () => {
       ...state,
       messagesHistoryList: [msg],
     });
+  });
+});
+
+describe("test chatroom input componentes", () => {
+  it("should insert user name to UserLogin component and save it's value in the state username", () => {
+    const { hasError } = store.getState();
+
+    const utils = render(
+      <Provider store={store}>
+        <UserLogin
+          loginAction={() => store.dispatch({ type: "REGISTER" })}
+          changed={(event: any) =>
+            store.dispatch({
+              type: "CHANGE_USERNAME",
+              payload: { inputText: event.target.value },
+            })
+          }
+          error={hasError}
+        />
+      </Provider>
+    );
+    const input = getById(utils.container, "user-login");
+    if (input !== null) {
+      fireEvent.change(input, { target: { value: "Mr. A" } });
+    }
+    const btn = getById(utils.container, "user-login-btn");
+    if (btn !== null) {
+      fireEvent.click(btn);
+    }
+    expect(store.getState().userName).toBe("Mr. A");
+  });
+
+  it("should insert a message to inputArea component and change it in state currMsg value", () => {
+    const { userName, avatarUrl, currentMsg, hasError } = store.getState();
+
+    const utils = render(
+      <Provider store={store}>
+        <InputArea
+          userName={userName}
+          avatarUrl={avatarUrl}
+          click={() => store.dispatch({ type: "SEND" })}
+          changed={(event: any) =>
+            store.dispatch({
+              type: "CHANGE_SEND",
+              payload: { inputText: event.target.value },
+            })
+          }
+          error={hasError}
+          value={currentMsg}
+        />
+      </Provider>
+    );
+    const input = getById(utils.container, "input-msg");
+    if (input !== null) {
+      fireEvent.change(input, { target: { value: "Hello Mr.T" } });
+    }
+    expect(store.getState().currentMsg).toBe("Hello Mr.T");
+  });
+
+  it("should falid sending an empty message", () => {
+    const { userName, avatarUrl, hasError, currentMsg } = store.getState();
+
+    const utils = render(
+      <Provider store={store}>
+        <InputArea
+          userName={userName}
+          avatarUrl={avatarUrl}
+          click={() => store.dispatch({ type: "SEND" })}
+          changed={(event: any) =>
+            store.dispatch({
+              type: "CHANGE_SEND",
+              payload: { inputText: event.target.value },
+            })
+          }
+          error={hasError}
+          value={currentMsg}
+        />
+      </Provider>
+    );
+    const input = getById(utils.container, "input-msg");
+    if (input !== null) {
+      fireEvent.change(input, { target: { value: "" } });
+    }
+
+    const btn = getById(utils.container, "sent-msg-btn");
+    if (btn !== null) {
+      fireEvent.click(btn);
+    }
+    expect(store.getState().hasError).toBe(true);
   });
 });

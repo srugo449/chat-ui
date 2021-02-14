@@ -26,12 +26,13 @@ const userLogin = (props: {
         }}
       />
       <Button
+        id="user-login-btn"
         className="login-btn"
         variant="contained"
         color="primary"
         onClick={props.loginAction}
       >
-        Send
+        Login
       </Button>
     </Card>
   );

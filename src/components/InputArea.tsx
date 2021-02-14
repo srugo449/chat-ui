@@ -27,6 +27,7 @@ const inputArea = (props: {
         value={props.value}
       />
       <Button
+        id="sent-msg-btn"
         className="send-btn"
         variant="contained"
         color="primary"
