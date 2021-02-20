@@ -18,7 +18,7 @@ const messagesHistory = (props: {
         timestamp={msg.timestamp.toString()}
         msgContent={msg.text}
         owner={msg.username === props.myUserName ? "owner" : "other"}
-        key={key++}
+        key={++key}
       ></Message>
     );
   }

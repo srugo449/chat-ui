@@ -1,31 +1,83 @@
 import React, { Component } from "react";
 import InputArea from "../../components/InputArea";
-import { connect } from "react-redux";
 import MessagesHistory from "../../components/MessagesHistory";
 import UserLogin from "../../components/UserLogin";
 import { ChatRoomActions, ChatRoomState } from "../../chatRoomTypes";
-import { registerHandler } from "../../socketApi";
+import { registerHandler, sendMessage } from "../../socketApi";
+import {
+  addMsg,
+  addUser,
+  setMsgText,
+  setUserName,
+  setHasError,
+} from "../../store/actions";
+import { connect } from "react-redux";
+
+const Avatars = [
+  "https://ow-publisher-assets.s3.amazonaws.com/chat-app/avatars/001-snorlax.png",
+  "https://ow-publisher-assets.s3.amazonaws.com/chat-app/avatars/002-psyduck.png",
+  "https://ow-publisher-assets.s3.amazonaws.com/chat-app/avatars/003-pikachu.png",
+  "https://ow-publisher-assets.s3.amazonaws.com/chat-app/avatars/004-jigglypuff.png",
+  "https://ow-publisher-assets.s3.amazonaws.com/chat-app/avatars/005-bullbasaur.png",
+];
 
 class ChatRoom extends Component<ChatRoomState & ChatRoomActions> {
   componentDidMount() {
-    registerHandler(this.props.receive);
+    registerHandler(this.props.addMsg);
+  }
+
+  registerUser() {
+    if (this.props.userName === "") {
+      this.props.setHasError(true);
+    } else {
+      this.props.setHasError(false);
+      let avatarIndex = Math.floor(Math.random() * 5);
+      let avatar = Avatars[avatarIndex];
+
+      sessionStorage.setItem(
+        "user",
+        JSON.stringify({ userName: this.props.userName, avatar })
+      );
+
+      this.props.addUser(this.props.userName, avatar);
+    }
+  }
+
+  login() {
+    let oldUser = sessionStorage.getItem("user");
+    if (oldUser !== null) {
+      const { userName, avatar } = JSON.parse(oldUser);
+      this.props.addUser(userName, avatar);
+    }
+  }
+
+  sendMsg() {
+    if (this.props.currentMsg === "") {
+      this.props.setHasError(true);
+    } else {
+      this.props.setHasError(false);
+      let msg = {
+        text: this.props.currentMsg,
+        timestamp: new Date(),
+        username: this.props.userName,
+        avatar: this.props.avatarUrl,
+      };
+      this.props.setMsgText("");
+      sendMessage(msg);
+    }
   }
 
   render() {
     ///First check is the user is saved in the local storge, which means the user is already logged in, and refreshed the browser.
     if (!this.props.isLoggedIn) {
-      let oldUser = sessionStorage.getItem("user");
-      if (oldUser !== null) {
-        const { userName, avatar } = JSON.parse(oldUser);
-        this.props.login(userName, avatar);
-      }
+      this.login();
     }
     ///Check is the user is already logged in, if not display the log in screen.
     if (!this.props.isLoggedIn) {
       return (
         <UserLogin
-          loginAction={this.props.register}
-          changed={(e) => this.props.usernameTextChange(e)}
+          loginAction={() => this.registerUser()}
+          changed={(e) => this.props.setUserName(e)}
           error={this.props.hasError}
         />
       );
@@ -41,8 +93,8 @@ class ChatRoom extends Component<ChatRoomState & ChatRoomActions> {
           <InputArea
             userName={this.props.userName}
             avatarUrl={this.props.avatarUrl}
-            click={this.props.sendMsg}
-            changed={(e) => this.props.msgTextChange(e)}
+            click={() => this.sendMsg()}
+            changed={(e) => this.props.setMsgText(e)}
             error={this.props.hasError}
             value={this.props.currentMsg}
           ></InputArea>
@@ -65,22 +117,12 @@ const mapStateToProps = (state: ChatRoomState) => {
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
-    receive: (newMsg: any) =>
-      dispatch({ type: "RECEIVE", payload: { newMsg } }),
-    register: () => dispatch({ type: "REGISTER" }),
-    login: (userName: string, avatar: string) =>
-      dispatch({ type: "LOGIN", payload: { userName, avatar } }),
-    sendMsg: () => dispatch({ type: "SEND" }),
-    msgTextChange: (event: any) =>
-      dispatch({
-        type: "CHANGE_SEND",
-        payload: { inputText: event.target.value },
-      }),
-    usernameTextChange: (event: any) =>
-      dispatch({
-        type: "CHANGE_USERNAME",
-        payload: { inputText: event.target.value },
-      }),
+    addUser: (userName: string, avatar: string) =>
+      dispatch(addUser(userName, avatar)),
+    setUserName: (event: any) => dispatch(setUserName(event)),
+    addMsg: (newMsg: any) => dispatch(addMsg(newMsg)),
+    setMsgText: (event?: any) => dispatch(setMsgText(event)),
+    setHasError: (errorFlag: boolean) => dispatch(setHasError(errorFlag)),
   };
 };
 
