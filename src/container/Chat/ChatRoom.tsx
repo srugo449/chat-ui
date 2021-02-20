@@ -43,7 +43,7 @@ class ChatRoom extends Component<ChatRoomState & ChatRoomActions> {
     }
   }
 
-  login() {
+  loginUser() {
     let oldUser = sessionStorage.getItem("user");
     if (oldUser !== null) {
       const { userName, avatar } = JSON.parse(oldUser);
@@ -70,7 +70,7 @@ class ChatRoom extends Component<ChatRoomState & ChatRoomActions> {
   render() {
     ///First check is the user is saved in the local storge, which means the user is already logged in, and refreshed the browser.
     if (!this.props.isLoggedIn) {
-      this.login();
+      this.loginUser();
     }
     ///Check is the user is already logged in, if not display the log in screen.
     if (!this.props.isLoggedIn) {
